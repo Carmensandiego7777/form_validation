@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>Form Validation</title>
+    <style>
+    form, input {
+      display: block;
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container mt-5">
+    <form name="myForm" id="form" action="javascript:void(0)">
+    
+        name: <input type="text" name="fname" id="name" class="name" oninput="nameValidation()">
+        <span id="nameError" class="error_n"></span> <br/>
+        Email: <input type="email" name="email" class="email" id="email" class="email" oninput="emailValidation()">
+        <span id="emailError" class="error_e"></span>
+        <p id="w"></p>
+        Phone: <input type="text" name="phone" id="phone" class="phone" oninput="phoneValidation()">
+        <span id="phoneError" class="error_p"></span>
+        <p id="e"></p>
+        DOB: <input type="date" name="date" id="date" class="date" oninput="dateValidation()">
+        <span id="dateError" class="error_dob"></span>
+        <p id="r"></p>
+        Gender:<select id="gender" class="gender">
+            <option value=""></option>
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+        </select>
+
+        <p id="t"></p>
+        Education: <select id="education" class="education">
+            <option value=""></option>
+            <option value="highschool">High School</option>
+            <option value="college">College</option>
+            <option value="university">University</option>
+        </select>
+        <p id="y"></p>
+        Occupation: <select id="occupation" class="occupation" >
+            <option value=""></option>
+            <option value="student">Student</option>
+            <option value="employer">Employer</option>
+        </select>
+        <p id="u"></p>
+        Username:<input type="text" id="username" name="username" class="username" oninput="phoneValidation">
+        <span id="usernameError" class="error"></span>
+        
+
+        Password: <input type="password" id="password" name="password" class="password">
+        <span id="passwordError" class="error"></span>
+
+        PAN: <input type ="text"  id="pan" name="pan" class="pan">
+        <span id="panerror" class="error"></span>
+
+        Profile photo: <input type="file" class="form-control" id="profilePicture" name="profilePicture" accept="image/png, image/jpeg"   class="profilePicture"  >
+        <span id="profilePictureError" class="error"></span>
+        
+        <input type="submit" class="test" value="submit" onclick="usernameValidation()">
+
+    </form>
+    
+</div>
+<script src="valid.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
