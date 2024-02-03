@@ -1,0 +1,374 @@
+const sect1 = document.getElementById('sect1');
+const sect2 = document.getElementById('sect2');
+const section1 = document.getElementById('section1');
+const section2 = document.getElementById('section2');
+
+
+let currentSection = 'section1'
+
+const setSection1 = () => {
+currentSection = 'section1';
+    section2.style.display = 'none'
+    section1.style.display = 'grid'
+    sect1.classList.add('active')
+    sect2.classList.remove('active')
+}
+const setSection2 = () => {
+currentSection = 'section2';
+    section1.style.display = 'none'
+    section2.style.display = 'grid'
+    sect2.classList.add('active')
+    sect1.classList.remove('active')
+}
+
+if (currentSection === 'section1') {
+    setSection1()
+}
+else {
+    setSection2()
+}
+
+sect1.addEventListener('click', () => {
+    currentSection = 'section1'
+    console.log(currentSection)
+    setSection1()
+})
+
+sect2.addEventListener('click', () => {
+    currentSection = 'section2';
+    console.log(currentSection)
+    setSection2()
+})
+
+
+const form = document.getElementById('form');
+const input = document.getElementsByTagName('input');
+const select = document.getElementsByTagName('select');
+
+// state
+
+const removeError = (element) => {
+    element.classList.remove('error')
+    element.classList.add('success')
+    const nextElement = element.nextElementSibling;
+    if (nextElement && nextElement.classList.contains('error_message')) { 
+        element.parentNode.removeChild(nextElement)
+    }
+}
+
+const setError = (element,message) => { 
+    element.classList.remove('success')
+    element.classList.add('error')
+    const nextElement = element.nextElementSibling;
+    const errorElement = document.createElement('p')
+    errorElement.classList.add('error_message');
+    errorElement.textContent = message
+    if (nextElement && nextElement.classList.contains('error_message')) {
+        element.parentNode.replaceChild(errorElement,nextElement)
+    } else {
+        element.parentNode.insertBefore(errorElement,nextElement)
+    }
+}
+
+// form event listeners
+
+form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    validateForm();
+})
+
+const validateForm = () => {
+    const data = {
+        name: input[0].value,
+        email: input[1].value,
+        contact: input[2].value,
+        dob: input[3].value,
+        occupation: input[4].value,
+        username: input[5].value,
+        password: input[6].value,
+        pan: input[7].value,
+        file: {
+            fileSize: input[8].files[0]?.size || '',
+            fileType: input[8].files[0]?.type || '',
+        }
+    }
+    validateName()
+    validateEmail()
+    validateContact()
+    validateDOB()
+    validateGender()
+    validateEducation()
+    validateOccupation()
+    validateUserName()
+    validatePassword()
+    validatePan()
+    validateFileUpload()
+    if (validateName() && validateEmail() && validateContact() && validateOccupation() && validateUserName() && validatePassword() && validatePan() && validateFileUpload()) {
+        if (localStorage.getItem('formData')) {
+            const formData = JSON.parse(localStorage.getItem('formData'))
+            localStorage.setItem('formData', JSON.stringify([...formData, {...data}]))
+        }
+        else {
+            localStorage.setItem('formData', JSON.stringify([{ ...data }]))
+        }
+    }
+    else {
+        console.log("Validation failed")
+    }
+}
+
+Array.from(input).forEach(element => {
+    element.addEventListener('input', () => {
+        switch (element.name) {
+            case 'name':
+                validateName()
+                break;
+            case 'email':
+               validateEmail()
+                break;
+            case 'contact':
+                validateContact()
+                break;
+            case 'dob':
+                validateDOB()
+                break;
+            case 'occupation':
+                validateOccupation()
+                break;
+            case 'username':
+                validateUserName()
+                break
+            case 'password':
+                validatePassword()
+                break;
+            case 'pan':
+                validatePan()
+                break;
+            case 'file':
+                validateFileUpload()
+                break
+            default:
+                break;
+        }
+    })
+});
+
+
+const validateName = () => {
+    const name = input[0].value
+    if (name.length < 4) {
+        setError(input[0], 'User name must be at least 4 characters')
+        return false
+    }
+    else {
+        removeError(input[0])
+        return true
+    }
+}
+
+const validateEmail = () => { 
+    const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[A-Za-z]{2,}$/
+    const email = input[1].value
+    if (email.length === 0 || !emailRegex.test(email)) { 
+        setError(input[1], 'Enter valid email')
+        return false 
+    } else {
+        removeError(input[1])
+        return true
+    }
+}
+
+const validateContact = () => {
+    const contact = input[2].value
+    const contactRegex = /^[789]\d{9}$/;
+    if (contact.length < 10 || !contactRegex.test(contact)) {
+        setError(input[2], 'Contact number is invalid')
+        return false
+    }
+    else {
+        removeError(input[2])
+        return true
+    }
+}
+
+const validateOccupation = () => { 
+    const occupation = input[4].value
+    if (occupation.length === 0) {
+        setError(input[4],'This field cannot be empty')
+        return false
+    }
+    else {
+        removeError(input[4])
+        return true
+    }
+}
+
+const validateUserName = () => { 
+    let data = null;
+    const username = input[5].value
+    if (localStorage.getItem('formData')) {
+        data = JSON.parse(localStorage.getItem('formData'))
+        data.map(user => { 
+            if (user.name === username) {
+                setError(input[5],'Username already taken')
+                return false
+            }
+            else if (username.length < 3) {
+                setError(input[5], 'Username too short')
+                return false
+            }
+            else if (username.length > 32) { 
+                setError(input[5], 'Username too long')
+                return false
+            }
+            else {
+                removeError(input[5])
+                return true
+            }
+        })
+    }
+    else {
+            if (username.length < 3) {
+                setError(input[5], 'Username too short')
+                return false
+            }
+            else if (username.length > 32) { 
+                setError(input[5], 'Username too long')
+                return false
+            }
+            else {
+                removeError(input[5])
+                return true
+            }
+    }
+}
+
+const validatePassword = () => {
+    const password = input[6].value
+    const passwordRegex = /^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&])[0-9a-zA-Z!@#$%^&]{8,15}$/;
+    if (passwordRegex.test(password)) { 
+        removeError(input[6])
+        return true
+    }
+    else {
+        setError(input[6],'password must contain one upper case letter, one special character, one lower case letter and one numeric character')
+        return false
+    }
+}
+
+const validatePan = () => {
+    const pan = input[7].value
+    const panregex = /^[A-Z]{5}\d{4}[A-Z]$/
+    if (panregex.test(pan)) { 
+        removeError(input[7])
+        return true
+    }
+    else {
+        setError(input[7])
+        return false
+    }
+}
+
+const validateFileUpload = () => {
+    const file = input[8].files[0]
+    if (!file) {
+        setError(input[8],'Select a file')
+        return false
+    }
+    else if (file.size > 2000000) {
+        setError(input[8],'File too large')
+        return false
+    }
+    else {
+        removeError(input[8])
+        return true
+    }
+}
+
+Array.from(select).forEach(element => {
+    element.addEventListener('change', () => {
+        switch (element.name) {
+            case 'education':
+                validateEducation()
+                break;
+            case 'gender':
+                validateGender()
+            default:
+                break;
+        }
+    })
+})
+
+
+const validateEducation = () => {
+    const education = select[1].value
+    if (education === "") {
+        setError(select[1],'Select a valid education')
+        return false
+    }
+    else {
+        removeError(select[1])
+        return true
+    }
+}
+
+const validateGender = () => { 
+    const gender = select[0].value
+    if (gender === "") {
+        setError(select[0],'Select a valid gender')
+        return false
+    }
+    else {
+        removeError(select[0])
+        return true
+    }
+}
+
+const validateDOB = () => {
+    const date = input[3].value
+    if (!date) {
+        setError(input[3],'Select a valid date of birth')
+        return false
+    }
+    else {
+        removeError(input[3])
+        return true
+    }
+}
+
+// search filter
+
+
+const form1 = document.getElementById('form1')
+const name_search = document.getElementById('name')
+const user_container = document.querySelector('.users')
+
+form1.addEventListener('submit', (e) => {
+    e.preventDefault();
+    fetchUser()
+})
+
+const fetchUser = () => { 
+    if (localStorage.getItem('formData')) {
+        const data = localStorage.getItem('formData')
+        console.log(data)
+        const userData = JSON.parse(localStorage.getItem('formData'))
+        console.log(userData)
+        userData.map(user => (
+            user_container.innerHTML += `
+            <div class="user_card">
+                    <h5 class="card-title">${user.name}</h5>
+                    <p class="card-text">Email: ${user.email}</p>
+                    <p class="card-text">Contact: ${user.contact}</p>
+                    <p class="card-text">Date of Birth: ${user.dob}</p>
+                    <p class="card-text">Occupation: ${user.occupation}</p>
+                    <p class="card-text">Username: ${user.username}</p>
+                    <p class="card-text">PAN: ${user.pan}</p>
+            </div>`
+        ))
+    }
+    else { 
+        user_container.innerHTML = '<p>No data found</p>'
+    }
+}
+fetchUser()
