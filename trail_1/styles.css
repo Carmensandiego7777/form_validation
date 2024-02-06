@@ -1,0 +1,52 @@
+/* styles.css */
+
+/* Style for the search container */
+#search-container {
+    margin-bottom: 20px;
+}
+
+/* Style for the search input */
+#search {
+    padding: 5px;
+    margin-right: 5px;
+}
+
+/* Style for the search button */
+#search-btn {
+    padding: 5px 10px;
+    cursor: pointer;
+}
+
+/* Style for the result container */
+#result-container {
+    margin-top: 10px;
+}
+
+/* Style for the result span */
+#result {
+    font-weight: bold;
+    color: green;
+}
+
+
+.error {
+    color: #ff0000;
+}
+
+body {
+    background: rgb(2,0,36);
+background: -moz-linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(9,9,121,1) 33%, rgba(0,212,255,1) 100%);
+background: -webkit-linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(9,9,121,1) 33%, rgba(0,212,255,1) 100%);
+background: linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(9,9,121,1) 33%, rgba(0,212,255,1) 100%);
+filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#020024",endColorstr="#00d4ff",GradientType=1);
+}
+
+#form{
+    width: 400px;
+    margin: 2vh auto 0 auto;
+    background-color: whitesmoke;
+
+    padding: 20px;
+    border-radius: 5px;
+
+}
