@@ -1,39 +1,61 @@
 
-function initializeLocalStorage() {
-    const existingData = localStorage.getItem("base_storage");
-
-    if (!existingData) {
-        const dummyData = [
-            {
-                name: "John Doe",
-                email: "john@example.com",
-                phone: "9876543210",
-                dob: "1990-01-01",
-                gender: "male",
-                education: "bachelors",
-                username: "john_doe123",
-                password: "Abc@1234",
-                PAN: "ABCDE1234F",
-            },
-            // Add more dummy data as needed
-        ];
-
-        localStorage.setItem("base_storage", JSON.stringify(dummyData));
+async function initializeLocalStorage() {
+    try {
+        const existingData = JSON.parse(localStorage.getItem("userData"));
+        const image = await generatePhoto()
+            const data ={
+            name: document.getElementById('name').value,
+            email: document.getElementById('email').value,
+            phone: document.getElementById('phone').value,
+            dob: document.getElementById('date').value,
+            gender: document.getElementById('gender').value,
+            education: document.getElementById('education').value,
+            username: document.getElementById('username').value,
+            password: document.getElementById('password').value,
+            PAN: document.getElementById('PAN').value,
+            photo: {
+                url: image,
+                size: document.getElementById('photo').files[0].size,
+                type: document.getElementById('photo').files[0].type
+            }
+        }
+        if(existingData){
+            localStorage.setItem("userData", JSON.stringify([...existingData, data]));
+        }
+        else {
+            localStorage.setItem("userData", JSON.stringify([data]));
+        }
+    }
+    catch(e){
+        console.error(e)
     }
 }
 
-// Call the function to initialize local storage with dummy data
-initializeLocalStorage();
-
-// Rest of your code...
 
 
-form.addEventListener('submit',(e) => {
+const generatePhoto = () => {
+    const element = document.getElementById('photo')
+    return new Promise((resolve, reject) => {
+        const image = element.files[0]
+        if(image) {
+            const reader = new FileReader()
+            reader.onload = (e) => {
+                const base64Photo = e.target.result
+                resolve(base64Photo)
+            }
+            reader.error = (e) => {
+                reject(e)
+            }
+            reader.readAsDataURL(image)
+        }
+        else {
+            reject(null)
+        }
+    })
+}
+
+function validateEntireForm(e) {
     e.preventDefault();
-    validateEntireForm(); // in submit through onclick event, we run a single function.
-})
-
-function validateEntireForm() {
     const isNameValid = nameValidation();
     const isEmailValid = emailValidation();
     const isPhoneValid = phoneValidation();
@@ -43,53 +65,17 @@ function validateEntireForm() {
     const isUsernameValid = usernameValidation();
     const isPasswordValid = passwordValidation();
     const isPANValid = PANValidation();
-
-    // You can add more validation functions as needed
-
-    // Check if all validations pass
-    if (isNameValid || isEmailValid || isPhoneValid || isDOBValid ||
-        isGenderValid || isEducationValid ||
-        isUsernameValid || isPasswordValid || isPANValid) {
+    const isPhotoValid = photoValidation();
+    if (isNameValid && isEmailValid && isPhoneValid && isDOBValid &&
+        isGenderValid && isEducationValid &&
+        isUsernameValid && isPasswordValid && isPANValid && isPhotoValid) {
         
-        // Store all data in local storage
-        storeFormData();
+        initializeLocalStorage();
 
-        // Form is valid, you can proceed with submission or other actions
         console.log("Form is valid");
     } else {
-        // Form has validation errors
-        alert("Form has validation errors");
+        console.error("Form has validation errors");
     }
-}
-
-function storeFormData() {
-    const data = {
-        name: document.querySelector(".name").value,
-        email: document.querySelector(".email").value,
-        phone: document.querySelector(".phone").value,
-        dob: document.querySelector(".date").value,
-        gender: document.querySelector(".gender").value,
-        education: document.querySelector(".education").value,
-        username: document.querySelector(".username").value,
-        password: document.querySelector(".password").value,
-        PAN: document.querySelector(".PAN").value,
-        // Add more fields as needed
-    };
-
-    // Get existing data from local storage or initialize an empty array
-    if(localStorage.getItem("base_storage")===null) {
-        localStorage.setItem("base_storage", JSON.stringify([{...data}]));
-    }else {
-        // localStorage.setItem("base_storage", JSON.stringify(data));
-        const existingData = JSON.parse(localStorage.getItem("base_storage"));
-        localStorage.setItem("base_storage", JSON.stringify([...existingData, data]));
-    }
-    // console.log(data.name, data.email, data.phone, data.dob, data.gender, data.education)
-    // Add the new data to the array
-    // existingData.push(data);
-
-    // Update local storage with the updated array
-    // localStorage.setItem("base_storage", [...existingData, JSON.stringify()]);
 }
 
 
@@ -101,7 +87,7 @@ function nameValidation(){
     if(verifyNameValidation){
         nameError.innerHTML="Looks Good";
     }else{
-        nameError.innerHTML="Invalid Name";
+        nameError.innerHTML="<p class='error'>Invalid Name</p>";
     }
     return verifyNameValidation
 }
@@ -115,7 +101,7 @@ function emailValidation(){
     if(verifyEmailValidation){
         emailError.innerHTML="Looks Good";
     }else{
-        emailError.innerHTML="Invalid Email";
+        emailError.innerHTML="<p class='error'>Invalid Email</p>";
     }
     return verifyEmailValidation
 }
@@ -128,7 +114,7 @@ function phoneValidation(){
     if(verifyPhoneValidation){
         phoneError.innerHTML="Looks Good";
     }else{
-        phoneError.innerHTML="Invalid Phone";
+        phoneError.innerHTML="<p class='error'>Invalid Phone</p>";
     }
     return verifyPhoneValidation
 }
@@ -141,90 +127,10 @@ function dateValidation(){
     if(verifyDateValidation){
         dateError.innerHTML="Looks Good";
     }else{
-        dateError.innerHTML="Invalid Date [1950 -2010 only]";
+        dateError.innerHTML="<p class='error'>Invalid Date [1950 -2010 only]</p>";
     }
     return verifyDateValidation
 }
-// for USERNAME
-// function handleSubmit(e) {
-//     e.preventDefault();
-//     if (usernameValidation()) {
-//         updateLocalStorage();
-//         // Proceed with form submission or any other logic here
-//         console.log("Form submitted successfully");
-//     } else {
-//         console.log("Form not submitted due to validation errors");
-//     }
-// }
-// function updateLocalStorage() {
-//     const username = document.querySelector(".username").value;
-//     const data = JSON.parse(localStorage.getItem("base_storage")) || [];
-
-//     // Check if the username is already present
-//     const existingUser = data.find(user => user.username === username);
-
-//     if (!existingUser) {
-//         // Add the new user to the data array
-//         data.push({ username: username });
-
-//         // Update the local storage
-//         localStorage.setItem("base_storage", JSON.stringify(data));
-//     }
-// }
-
-// function initializeLocalStorage() {
-//     const existingData = localStorage.getItem("base_storage");
-
-//     if (!existingData) {
-//         const dummyData = [
-//             { username: "user1" },
-//             // { username: "user2" },
-//             // Add more dummy data as needed
-//         ];
-
-//         localStorage.setItem("base_storage", JSON.stringify(dummyData));
-//     }
-// }
-
-// initializeLocalStorage();
-
-// const form = document.querySelector('form');
-// form.addEventListener('submit', handleSubmit);
-
-// function usernameValidation() {
-//     const username = document.querySelector(".username").value;
-//     const usernameError = document.querySelector(".usernameError");
-
-//     if (localStorage.getItem("base_storage")) {
-//         const data = JSON.parse(localStorage.getItem("base_storage"));
-
-//         const existingUser = data.find(user => user.username === username);
-
-//         if (existingUser) {
-//             usernameError.innerHTML = "Username already present";
-//             return false;
-//         } else if (username.length < 3) {
-//             usernameError.innerHTML = "Too short username";
-//             return false;
-//         } else if (username.length > 15) {
-//             usernameError.innerHTML = "Too long username";
-//             return false;
-//         } else {
-//             // Reset error message if username is valid
-//             usernameError.innerHTML = "";
-
-//             // Add the new user to the data array
-//             data.push({ username: username });
-
-//             // Update the local storage
-//             localStorage.setItem("base_storage", JSON.stringify(data));
-
-//             return true; // Username is valid
-//         }
-//     }
-
-//     return false; // In case local storage is not available
-// }
 function usernameValidation(){
     const username= document.querySelector(".username").value;
     const usernameError=document.getElementById("usernameError");
@@ -233,7 +139,7 @@ function usernameValidation(){
     if(verifyUsernameValidation){
         usernameError.innerHTML="Looks Good";
     }else{
-        usernameError.innerHTML="Invalid Username";
+        usernameError.innerHTML="<p class='error'>Invalid Username</p>";
     }
     return verifyUsernameValidation
 }
@@ -246,7 +152,7 @@ function passwordValidation(){
     if(verifyPasswordValidation){
         passwordError.innerHTML="Looks Good";
     }else{
-        passwordError.innerHTML="Invalid Password";
+        passwordError.innerHTML="<p class='error'>Invalid Password</p>";
     }
     return verifyPasswordValidation
 }
@@ -259,7 +165,7 @@ function  PANValidation(){
     if(verifyPANValidation){
         PANError.innerHTML="Looks Good";
     }else{
-        PANError.innerHTML="Invalid PAN";
+        PANError.innerHTML="<p class='error'>Invalid PAN</p>";
     }
     return verifyPANValidation
 }
@@ -275,9 +181,8 @@ function genderValidation() {
     if (isValid) {
         genderError.innerHTML = "Looks Good";
     } else {
-        genderError.innerHTML = "Please select a gender";
+        genderError.innerHTML = "<p class='error'>Please select a gender</p>";
     }
-
     return isValid;
 }
 
@@ -292,8 +197,87 @@ function educationValidation() {
     if (isValid) {
         educationError.innerHTML = "Looks Good";
     } else {
-        educationError.innerHTML = "Please select an education";
+        educationError.innerHTML = "<p class='error'>Please select an education</p>";
     }
 
     return isValid;
+}
+
+function photoValidation() {
+    const photoInput = document.getElementById("photo");
+    const photoError = document.getElementById("photoError");
+    if (photoInput.files[0]) {
+        const selectedPhoto = photoInput.files[0];
+        const allowedTypes = ["image/jpeg", "image/png"];
+        const maxSizeMB = 2;
+
+        if (allowedTypes.includes(selectedPhoto.type)) {
+            if (selectedPhoto.size / (1024 * 1024) <= maxSizeMB) {
+                    photoError.innerHTML = "Photo is valid";
+                    return true
+            } else {
+                photoError.innerHTML = "<p class='error'>Photo size should be less than 2 MB</p>";
+                photoInput.value = "";
+            }
+        } else {
+            photoError.innerHTML = "<p class='error'>Please select a valid JPEG or PNG image</p>";
+            photoInput.value = "";
+        }
+    } else {
+        photoError.innerHTML = "<p class='error'>Please select a photo</p>";
+    }
+    return false
+}
+
+function loadUsers(users) {
+    const results = document.querySelector('.result')
+    results.innerHTML = "";
+    users.map((user,index) => (
+        results.innerHTML += `<p key=${index}>Name: ${user.name}, Email: ${user.email}, Username: ${user.username}</p>`
+    ))
+}   
+
+loadUsers(JSON.parse(localStorage.getItem('userData')))
+function searchData() {
+    const searchTerm = document.getElementById("search").value.toLowerCase();
+    const resultContainer = document.getElementById("result");
+    const data = JSON.parse(localStorage.getItem('userData'))
+    const nameRegex = /^[a-z]+$/
+    if(searchTerm === '') return loadUsers(data) 
+    let newData = []
+    if(nameRegex.test(searchTerm)){
+        newData = data.filter(user => user.name.toLowerCase().includes(searchTerm))
+    }
+    const ageRegex = /^\d+$/
+    if(ageRegex.test(searchTerm)){
+        newData = data.filter(user => {
+            const birthDate = new Date(user.dob)
+            const today = new Date()
+            const difference = today - birthDate
+            const daysALive = Math.floor(difference / (1000 * 60 * 60 * 24))
+            console.log(daysALive > +searchTerm)
+            return daysALive < +searchTerm
+        })
+    }
+    const sizeRegex = /^\d+(mb|kb)$/
+    if(sizeRegex.test(searchTerm)){
+        const search = searchTerm.toLowerCase()
+        const digits = +search.match(/\d+/)[0]
+        const unit = search.match(/(mb|kb)/)[0]
+        let size = 0
+        if(unit == 'mb'){
+            size = digits * 1024 * 1024
+        }
+        if(unit == 'kb'){
+            size = digits * 1024
+        }
+        newData = data.filter(user => user.photo.size < size)
+    }
+
+    if(newData.length > 0){
+        loadUsers(newData)
+    }
+    else {
+        resultContainer.innerHTML = "No matching data found";
+    }
 }
